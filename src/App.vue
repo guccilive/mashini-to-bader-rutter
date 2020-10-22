@@ -37,7 +37,7 @@ export default {
     //
   }),
 
-   mounted() {
+   async mounted() {
     this.$store.dispatch("postsModule/loadAllPosts");
   },
 };
