@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-banner elevation="3" two-line class="my-6">
+    <v-banner elevation="3" two-line class="my-6" v-if="post">
       <v-avatar
         slot="icon"
         color="deep-purple accent-4"
