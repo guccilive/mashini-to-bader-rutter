@@ -28,7 +28,12 @@
 
 <script>
     export default {
-        props: ["form"]
+        props: {
+          form: {
+              title: "",
+              body: ""
+          }
+        }
     }
 </script>
 

@@ -34,23 +34,13 @@
                       <v-list-item-subtitle> {{ item.body }} </v-list-item-subtitle>
 
                       <v-list-item-subtitle> 
-                        <v-btn
-                        class="my-2"
-                        text
-                        dark
-                        x-small
-                        color="info"
-                        @click.prevent="setEditForm(item)"
-                      >
-                        Edit Post
-                      </v-btn>
+                        <v-btn class="my-2" text dark x-small color="info"
+                          @click.prevent="setFormToEditMode(item)"
+                        >
+                          Edit Post
+                        </v-btn>
 
-                      <v-btn
-                        class="my-2"
-                        text
-                        dark
-                        x-small
-                        color="pink"
+                      <v-btn class="my-2" text dark x-small color="pink"
                         @click.prevent="deletePost(item)"
                       >
                         Delete Post
@@ -83,7 +73,7 @@
                 v-if="!editMode"
                   dark
                   :color="color"
-                  @click.prevent="addNewPost()"
+                  @click.prevent="createNewPost()"
                 >
                   CREATE NEW POST
                 </v-btn>
@@ -91,7 +81,7 @@
                   v-else
                   dark
                   :color="color"
-                  @click.prevent="updatePost()"
+                  @click.prevent="updateExistingPost()"
                 >
                   UPDATE POST
                 </v-btn>
@@ -120,9 +110,9 @@ export default {
       form: {
         body: "",
         title: "",
-        userId: Math.floor(Math.random() * 10) + 1
+        userId: Math.floor(Math.random() * 10) + 1 // Assign a random number from between 1-9 to userID for post Creation
       },
-      cruTitle: "Create New Post",
+      cruTitle: "Create New Post", // Setup a dynamic Title for the Post for hearder(Create/Edit)
       editMode: false,
       color: "primary",
       alertMsg: {
@@ -133,6 +123,11 @@ export default {
   },
 
   computed: {
+    /** 
+      I could get data directely from State, but since I'm ordering data in Desc order, 
+      I prefered to use Getters
+    */
+
     // ...mapState({
     //   posts: state => state.postsModule.allPosts
     // }),
@@ -142,12 +137,9 @@ export default {
   },
 
   methods: {
-    styleEditMode() {
-      this.cruTitle =  "Update Post";
-      this.color = "deep-purple darken-2";
-    },
 
-    setToInitialMode() {
+    // Set Form to it initila Mode, which is CREATE Mode
+    setFormToInitialMode() {
       this.cruTitle =  "Create New Post";
       this.submitBtn =  "CREATE";
       this.color = "primary";
@@ -157,27 +149,26 @@ export default {
       this.form.userId = "";
       this.editMode = false;
     },
-    setEditForm(item) {
+    // Change the tile and color of the header/button when FORM is on the Edit Mode
+    setFormToEditMode(item) {
       this.editMode = true;
-      // this.styleEditMode();
       this.cruTitle =  "Update Post";
       this.color = "deep-purple darken-2";
       this.form.body = item.body;
       this.form.title = item.title;
       this.form.id = item.id;
-      // Assign a random number from between 1-9 to userID
       this.form.userId = item.userId;
       this.cruTitle =  "Update Post"
     },
     
-    addNewPost(){
+    createNewPost(){
       this.alertMsg.body = "";
       this.$store
           .dispatch("postsModule/addNewPost", this.form)
           .then(() => {
             this.alertMsg.body = "New Post Created Successfully!";
             this.alertMsg.code = "success";
-            this.setToInitialMode();
+            this.setFormToInitialMode();
           })
           .catch((error) => {
             console.log(error);
@@ -186,14 +177,14 @@ export default {
           });
     },
 
-    updatePost(){
+    updateExistingPost(){
       this.alertMsg.body = "";
       this.$store
           .dispatch("postsModule/updatePost", this.form)
           .then(() => {
             this.alertMsg.body = "Post Updated Successfully!";
             this.alertMsg.code = "success";
-            this.setToInitialMode();
+            this.setFormToInitialMode();
           })
           .catch((error) => {
             console.log(error);
@@ -204,13 +195,12 @@ export default {
 
     deletePost(item){
       this.alertMsg.body = "";
-      console.log(item);
       this.$store
           .dispatch("postsModule/deletePost", item)
           .then(() => {
             this.alertMsg.body = "Post Deleted Successfully!";
             this.alertMsg.code = "success";
-            this.setToInitialMode();
+            this.setFormToInitialMode();
           })
           .catch((error) => {
             console.log(error);
@@ -219,6 +209,10 @@ export default {
           });
     },
 
+    /** Since we have post on our local State, 
+        I prefered to get a post directly from State instead of 
+        sending another Http request to get a single post and 
+    */
     showSinglePost(item) {
       this.$router.push({
         name: "show-single-post",
